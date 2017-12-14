@@ -4,9 +4,9 @@ naxsi:
     - "80:80"
     - "8080:8080"
   environment:
-    BACKEND_IP: "93.184.216.34"
+    BACKEND_IP: "54.146.52.207"
     LEARNING_MODE: "yes"
-    # KIBANA_PASSWORD: "your-supersecret-password"
+    KIBANA_PASSWORD: "LetsJam2017"
   links:
     - elasticsearch
     - kibana
@@ -17,11 +17,21 @@ elasticsearch:
   image: elasticsearch:latest
   command: elasticsearch -Enetwork.host=0.0.0.0
 # Uncomment to allow access from network
-#  ports:
-#    - "9200:9200"
-#    - "9300:9300"
+  ports:
+    - "9200:9200"
+    - "9300:9300"
   volumes:
     - ./elasticsearch-data:/usr/share/elasticsearch/data
+
+logstash:
+    image: logstash:latest
+    command: logstash -f /etc/logstash/conf.d/logstash.conf
+    ports:
+      - "12201:12201/udp"
+    volumes:
+      - "./logstash:/etc/logstash/conf.d"
+    links:
+      - elasticsearch
 
 kibana:
   image: kibana:latest
@@ -30,4 +40,3 @@ kibana:
     - ./kibana/kibana.yml:/opt/kibana/config/kibana.yml
   links:
     - elasticsearch
-
